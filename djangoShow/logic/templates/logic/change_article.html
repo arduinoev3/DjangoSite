@@ -1,0 +1,344 @@
+{% extends 'base.html' %} {% block title %} {{ article.title }} {% endblock %} {% block extra_css %}
+<style>
+    .main_container {
+        position: relative;
+        background-color: #0dffc1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .content {
+        padding: 30px 10px;
+        width: 55%;
+        border: 3px solid white;
+        border-radius: 50px 0px 50px 0px;
+        background-color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .container {
+        margin-top: 50px;
+        margin-bottom: 50px;
+        padding: 30px 10px;
+        width: 55%;
+        border: 3px solid white;
+        border-radius: 50px 0px 50px 0px;
+        background-color: rgba(255, 255, 255, 0.5);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .title_cont,
+    .auth {
+        color: #ff7f29;
+        font-family: Nunito Sans;
+        font-size: 30px;
+        text-align: center;
+    }
+    
+    .auth {
+        margin-top: 7px;
+    }
+    
+    .text_mess,
+    .text {
+        margin-bottom: 20px;
+        margin-top: 10px;
+        color: #a81fe7;
+        margin-left: 10px;
+        margin-right: 10px;
+        font-family: Nunito Sans;
+        font-size: 28px;
+        text-align: left;
+    }
+    
+    .text_mess_input {
+        font-size: 20px;
+        margin-bottom: 50px;
+        margin-top: 50px;
+        color: #a81fe7;
+        margin-left: 10px;
+        margin-right: 10px;
+        font-family: Nunito Sans;
+        text-align: left;
+    }
+    
+    .text {
+        color: #ff7f29;
+        font-size: 30px;
+    }
+    
+    .date_cont {
+        color: #ff7f29;
+        font-family: Nunito Sans;
+        font-size: 22px;
+        text-align: right;
+        margin-right: 100px;
+    }
+    
+    .messages {
+        margin-top: 50px;
+        margin-bottom: 50px;
+        padding: 30px 10px;
+        width: 75%;
+        border: 3px solid white;
+        border-radius: 50px 0px 50px 0px;
+        background-color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .send {
+        margin: 30px;
+        width: 300px;
+        height: 100px;
+        transition: all .2s ease-in-out .1s;
+        background-color: #a81fe7;
+        color: white;
+        font-size: 22px;
+        padding: 20px;
+        border-radius: 50px 0px 50px 0px;
+        border: 2px solid green;
+        padding: 10px;
+        text-align: center;
+    }
+    
+    .textarea {
+        margin: 30px;
+        width: 60%;
+        height: 250px;
+        border: 3px solid white;
+        font-size: 20px;
+    }
+    
+    .questions {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .btn {
+        position: relative;
+        display: flex;
+        justify-content: space-around;
+    }
+    
+    .form {
+        width: 80%;
+        border-bottom: 10px dashed white;
+        padding-top: 30px;
+        margin-top: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    input {
+        height: 60px;
+        width: 200px;
+        font-size: 20px;
+    }
+    
+    .check {
+        width: 3%;
+        background-color: #ff7f29;
+    }
+    
+    .article_text {
+        display: block;
+    }
+    
+    .art_text {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+    }
+    
+    .a_text {
+        text-align: center;
+        width: 120%;
+        margin-left: -70px;
+        margin-bottom: 130px;
+    }
+    
+    .inline {
+        margin-top: -60px;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+    }
+</style>
+{% endblock %} {% block content %}
+<div class="content">
+    <div class="title_cont">
+        <h1>{{ article.title }} | {{ article.get_access_display }}</h1>
+    </div>
+</div>
+<div class="container">
+    <form class="form" method="POST">
+        {% csrf_token %} {% if article.is_private %}
+        <button class="send" type="submit" formaction="{% url 'logic:make_public' article.id %}"> Отправить на модерацию </button> {% else %}
+        <button class="send" type="submit" formaction="{% url 'logic:make_private' article.id %}"> Сделать приватной </button> {% endif %}
+    </form>
+    <form class="form article_text" action="{% url 'logic:change_title' article.id %}" method="POST">
+        {% csrf_token %}
+
+        <div class="art_text">
+            <input type="text" required placeholder="  Новое название" name="title">
+            <button class="send" type="submit"> Изменить название </button>
+        </div>
+    </form>
+    <form class="form" action="{% url 'logic:change_text' article.id %}" method="POST">
+        {% csrf_token %}
+        <div>
+            <div class="text a_text">
+                <h5>{{ article.text }}</h5>
+            </div>
+            <div class="inline">
+                <textarea class="textarea" name="text" required placeholder="    Новый текст" cols="30" rows="10"></textarea>
+                <button class="send" type="submit"> Изменить текст </button>
+            </div>
+        </div>
+    </form>
+    <form class="form" method="POST">
+        {% csrf_token %}
+        <div class="text">
+            <h5>Комментарии: {{ article.get_comment_access_display }}</h5>
+        </div> {% if article.can_make_publish %}
+        <button class="send" type="submit" formaction="{% url 'logic:make_comments_private' article.id %}"> Сделать комментарии только приватными </button> {% else %}
+        <button class="send" type="submit" formaction="{% url 'logic:make_comments_public' article.id %}"> Разрешить отправлять комментарии на модерацию </button> {% endif %}
+    </form>
+    <form class="form" action="{% url 'logic:change_topic' article.id %}" method="POST">
+        {% csrf_token %} {% for c in Topic.choices %} {% if article.topic == c.0 %}
+        <input class="check" name="topic" type="radio" value="{{ c.0 }}" checked>
+        <div class="text_mess_input">
+            <h5>{{ c.1 }}</h5>
+        </div> {% else %}
+        <input class="check" name="topic" type="radio" value="{{ c.0 }}">
+        <div class="text_mess_input">
+            <h5>{{ c.1 }}</h5>
+        </div>
+        {% endif %} {% endfor %}
+        <button class="send" type="submit"> Изменить тему </button>
+    </form>
+    <div class="messages questions">
+        <div class="text">
+            <h4> Дата: </h4>
+        </div>
+        <div class="text_mess">
+            <h5> {{ article.pub_date }} </h5>
+        </div>
+        <div class="text">
+            <h4> Авторы: </h4>
+        </div>
+        {% if article.authors.all %} {% for author in article.authors.all %}
+
+        <div class="auth">
+            <h3>{{ author.username }} </h1>
+        </div>{% endfor %} {% else %}
+        <div class="text">
+            <h5>Нет авторов</h5>
+        </div>
+        {% endif %}
+    </div>
+    <form class="form" action="{% url 'logic:add_author' article.id %}" method="POST">
+        {% csrf_token %}
+        <input type="text" required placeholder="  Username автора" name="username" />
+        <button class="send" type="submit"> Добавить автора </button>
+    </form>
+    {% if article.slug %} <a href="{% url 'logic:slug_access' article.slug %}" target="_blank"> Сcылка </a> {% else %} Введите slug для доступа по ссылке {% endif %}
+    <form class="form" action="{% url 'logic:change_slug' article.id %}" method="POST">
+        {% csrf_token %}
+        <input type="text" required placeholder="  Новый slug" name="slug" /><br>
+        <button class="send" type="submit"> Изменить slug </button>
+    </form>
+    {% if article.questions %} {% for question in article.questions %}
+    <form class="form" action="{% url 'logic:change_question_text' article.id question.id %}" method="POST">
+        {% csrf_token %}
+        <div class="text">
+            <h5>{{ question.text }}</h5>
+        </div>
+        <input type="text" required placeholder="  Новый текст" name="text" />
+        <button class="send" type="submit"> Изменить текст </button>
+    </form>
+    <form class="form" action="{% url 'logic:delete_question' article.id question.id %}" method="POST">
+        {% csrf_token %}
+        <button class="send" type="submit"> Удалить вопрос </button>
+    </form>
+
+    <form class="form" action="{% url 'logic:change_question_type' article.id question.id %}" method="POST">
+        {% csrf_token %} {% for c in Type.choices %} {% if question.type == c.0 %}
+        <input class="check" name="type" type="radio" value="{{ c.0 }}" checked>
+        <div class="text_mess">
+            <h5>{{ c.1 }}</h5>
+        </div> {% else %}
+        <input class="check" name="type" type="radio" value="{{ c.0 }}">
+        <div class="text_mess">
+            <h5>{{ c.1 }}</h5>
+        </div> {% endif %} {% endfor %}
+        <button class="send" type="submit"> Изменить тип </button>
+    </form>
+    {% if question.result %}
+    <div class="text">
+        <h5>Результаты: {{ question.result }}</h5>
+    </div> {% endif %} {% if question.is_option %}
+    <form class="messages questions" action="{% url 'logic:add_question_option' article.id question.id %}" method="POST">
+        {% csrf_token %}
+        <input type="text" required placeholder="  Текст варианта" name="text" />
+        <button class="send" type="submit"> Добавить вариант </button>
+    </form>
+    {% if question.option_set.all %} {% for o in question.option_set.all %}
+    <form class="messages questions" action="{% url 'logic:delete_option' article.id o.id %}" method="POST">
+        {% csrf_token %}
+        <div class="text">
+            <h5>{{ o.text }}</h5>
+        </div>
+        <button class="send" type="submit"> Удалить вариант </button>
+    </form>
+    {% endfor %} {% else %}
+    <div class="text">
+        <h5>Нет вариантов ответа</h5>
+    </div> {% endif %} {% endif %} {% if question.answer_set.all %} {% for a in question.answer_set.all %}
+    <form class="messages questions" method="POST">
+        {% csrf_token %}
+        <div class="auth">
+            <h3> {{ a.author_name }}</h1>
+        </div>
+        {% for o in a.answeroption_set.all %}
+        <div class="text">
+            <h5>{{ o.text }} </h5>
+        </div>
+        <button class="send" type="submit" formaction="{% url 'logic:delete_answer' article.id a.id %}"> Удалить ответ </button>
+    </form>{% endfor %} {% endfor %} {% else %}
+    <div class="text">
+        <h5>Нет ответов</h5>
+    </div> {% endif %} {% endfor %} {% else %}
+    <div class="text">
+        <h5>Нет вопросов</h5>
+    </div>
+    {% endif %}
+    <form class="messages questions" action="{% url 'logic:add_question' article.id %}" method="POST">
+        {% csrf_token %}
+        <button class="send" type="submit"> Добавить вопрос </button>
+    </form>
+    {% if article.comments %} {% for comment in article.comments %}
+    <form class="messages questions" method="POST">
+        {% csrf_token %}
+        <div class="auth">
+            <h3>{{ comment.author_name }} | {{ comment.get_access_display }}</h1>
+        </div>
+        <div class="text">
+            <h5>{{ comment.text }}</h5>
+        </div>
+        <button class="send" type="submit" formaction="{% url 'logic:delete_comment' article.id comment.id %}"> Удалить комментарий </button> {% if comment.is_private %}
+        <button class="send" type="submit" formaction="{% url 'logic:send_comment_to_moderation' article.id comment.id %}"> Отправить на модерацию </button> {% endif %}
+    </form>
+    {% endfor %} {% else %}
+    <div class="text">
+        <h5>Нет комментариев</h5>
+    </div> {% endif %}
+</div> {% endblock %}

@@ -1,0 +1,58 @@
+{% extends "account/base.html" %} {% load i18n %} {% load account socialaccount %} {% block title %}{% trans "Signup" %}{% endblock %} {% block extra_css %}
+<style>
+    .socialaccount_providers {
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .messages,
+    .text_mess {
+        text-align: center;
+    }
+    
+    .login {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+</style>
+{% endblock %} {% block content %}
+
+<div class="content">
+    <div class="title_cont">
+        <h1>{% trans "Sign Up" %}</h1>
+    </div>
+</div>
+
+{% get_providers as socialaccount_providers %} {% if socialaccount_providers %}
+<div class="messages">
+    <div class="text_mess">
+        <h5>{% blocktrans %}Already have an account? Then please <a href="{{ login_url }}">sign in</a>.{% endblocktrans %}</h5>
+        {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+    </div>
+</div>
+
+<div class="text_mess">
+    <h1>or</h1>
+</div>
+
+{% include "socialaccount/snippets/login_extra.html" %} {% else %}
+<div class="messages">
+    <div class="title_cont">
+        <h1>{% blocktrans %}If you have not created an account yet, then please
+            <a href="{{ signup_url }}">sign up</a> first.{% endblocktrans %}</h1>
+    </div>
+    {% endif %}
+
+    <div class="messages">
+        <form class="login" id="signup_form" method="post" action="{% url 'account_signup' %}">
+            {% csrf_token %} {{ form.as_p }} {% if redirect_field_value %}
+            <input class="text_mess" type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" /> {% endif %}
+            <button class="send" type="submit">{% trans "Sign Up" %} &raquo;</button>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

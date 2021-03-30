@@ -1,0 +1,14 @@
+{% extends 'base.html' %} {% block title %} Вход {% endblock %} {% block userName %} Вход {% endblock %} {% block content %}
+<form action="{% url 'logic:entry' %}" method="POST">
+    {% csrf_token %} Имя: <input type="text" required placeholder="Имя" name="username" /> Пароль: <input type="password" required placeholder="Пароль" name="password" />
+    <button type="submit">Войти</button>
+</form>
+<form action="{% url 'logic:reset_password_from_username' %}" method="POST">
+    {% csrf_token %} Имя: <input type="text" required placeholder="Имя" name="username">
+    <button type="submit">Сбросить пароль</button>
+</form>
+<form action="{% url 'logic:reset_password_from_email' %}" method="POST">
+    {% csrf_token %} Почта: <input type="email" required placeholder="Почта" name="email">
+    <button type="submit">Сбросить пароль</button>
+</form>
+{% endblock %}

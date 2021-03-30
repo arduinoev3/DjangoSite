@@ -1,0 +1,95 @@
+{% extends 'base.html' %} {% block title %}Последние предложения{% endblock %} {% block extra_css%}
+<style>
+    .auth {
+        color: #ff7f29;
+        font-family: Nunito Sans;
+        font-size: 28px;
+        text-align: center;
+        margin-top: 100px;
+    }
+    
+    .text_mess {
+        margin-bottom: 50px;
+        margin-top: 50px;
+        margin-left: 100px;
+        margin-right: 100px;
+        color: #a81fe7;
+        font-family: Nunito Sans;
+        font-size: 28px;
+        text-align: left;
+    }
+    
+    .messages {
+        margin-top: 50px;
+        margin-bottom: 50px;
+        padding: 30px 10px;
+        width: 55%;
+        border: 3px solid white;
+        border-radius: 50px 0px 50px 0px;
+        background-color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .send {
+        margin: 30px;
+        width: 200px;
+        height: 100px;
+        transition: all .2s ease-in-out .1s;
+        background-color: #a81fe7;
+        color: white;
+        font-size: 22px;
+        padding: 20px;
+        border-radius: 50px 0px 50px 0px;
+        border: 2px solid green;
+        padding: 10px;
+        text-align: center;
+    }
+    
+    .main_container {
+        position: relative;
+        background-color: #0dffc1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .textarea {
+        margin: 30px;
+        width: 60%;
+        border: 3px solid white;
+    }
+    
+    .questions {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .btn {
+        position: relative;
+        display: flex;
+        justify-content: space-around;
+    }
+</style>
+{% endblock %} {% block content %} {% if latest_complaint_list %} {% for a in latest_complaint_list %}
+<div class="messages">
+    <div class="auth">
+        <h1>{{a.text}}</h1>
+    </div>
+    <div class="text_mess">
+        <h3>{{a.answer}}</h3>
+    </div>
+</div>
+{% endfor %} {% else %} Предложения не найдены {% endif %}
+
+
+<form action="{% url 'appeals:add_complaint' %}" method="POST" class="messages questions">
+    {% csrf_token %}
+    <textarea class="textarea" name="text" required="" placeholder="              Текст предложения" cols="30" rows="10"></textarea><br>
+    <div class="btn">
+        <button class="send" type="submit">Оставить предложение</button>
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "account/base.html" %} {% load i18n %} {% load account socialaccount %} {% block title %}{% trans "Sign Out" %}{% endblock %} {% block extra_css %}
+<style>
+    .socialaccount_providers {
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .messages,
+    .text_mess {
+        text-align: center;
+    }
+    
+    .login {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+</style>
+{% endblock %} {% block content %}
+
+<div class="content">
+    <div class="title_cont">
+        <h1>{% trans 'Are you sure you want to sign out?' %}</h1>
+    </div>
+</div>
+
+<div class="messages">
+    <form class="login" method="POST" action="{% url 'account_logout' %}">
+        {% csrf_token %} {% if redirect_field_value %}
+        <input class="text_mess" type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" /> {% endif %}
+        <button class="send" type="submit">{% trans 'Sign Out' %}</button>
+    </form>
+</div>
+{% endblock %}

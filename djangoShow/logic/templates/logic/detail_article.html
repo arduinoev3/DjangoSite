@@ -1,0 +1,226 @@
+{% extends 'base.html' %} {% block title %} {{ article.title }} {% endblock %} {% block extra_css %}
+<style>
+    .main_container {
+        position: relative;
+        background-color: #0dffc1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .content {
+        padding: 30px 10px;
+        width: 55%;
+        border: 3px solid white;
+        border-radius: 50px 0px 50px 0px;
+        background-color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .title_cont,
+    .auth {
+        color: #ff7f29;
+        font-family: Nunito Sans;
+        font-size: 28px;
+        text-align: center;
+    }
+    
+    .auth {
+        margin-top: 100px;
+    }
+    
+    .text_mess {
+        margin-bottom: 50px;
+        margin-top: 50px;
+        margin-left: 100px;
+        margin-right: 100px;
+        color: #a81fe7;
+        font-family: Nunito Sans;
+        font-size: 28px;
+        text-align: left;
+    }
+    
+    .date_cont {
+        color: #ff7f29;
+        font-family: Nunito Sans;
+        font-size: 22px;
+        text-align: right;
+        margin-right: 100px;
+    }
+    
+    .messages {
+        margin-top: 50px;
+        margin-bottom: 50px;
+        padding: 30px 10px;
+        width: 55%;
+        border: 3px solid white;
+        border-radius: 50px 0px 50px 0px;
+        background-color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .send {
+        margin: 30px;
+        width: 200px;
+        height: 100px;
+        transition: all .2s ease-in-out .1s;
+        background-color: #a81fe7;
+        color: white;
+        font-size: 22px;
+        padding: 20px;
+        border-radius: 50px 0px 50px 0px;
+        border: 2px solid green;
+        padding: 10px;
+        text-align: center;
+    }
+    
+    .textarea {
+        margin: 30px;
+        width: 60%;
+        border: 3px solid white;
+        border-radius: 50px 0px 50px 0px;
+    }
+    
+    .questions {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .btn {
+        position: relative;
+        display: flex;
+        justify-content: space-around;
+    }
+</style>
+{% endblock %} {% block content %}
+<div class="content">
+    <div class="title_cont">
+        <h1>{{ article.title }}</h1>
+    </div>
+    <div class="text_mess">
+        <p>{{ article.text }}</p>
+    </div>
+    <div class="date_cont">
+        <p>{{ article.pub_date }}</p>
+    </div>
+</div>
+
+
+<div class="author">
+    {% if article.authors.all %}
+    <div class="auth">
+        {% for author in article.authors.all %}
+        <h1>{{ author.username }}</h1> {% endfor %}
+    </div>
+    {% else %}
+    <div class="auth">
+        <h1>Нет авторов</h1>
+    </div>
+    {% endif %} {% if article.was_published_recently %}
+    <div class="text_mess">
+        <p> Новый вопрос!!!</p>
+    </div>
+    {% endif %}
+</div>
+
+{% if article.questions %} {% for question in article.questions %}
+<div class="messages">
+    <div class="text_mess">
+        <p>{{ question.text }}</p>
+    </div>
+</div>
+
+{% if user.is_authenticated %}
+<div class="content">
+    <form action="{% url 'logic:leave_answer_from_user' article.id question.id %}" method="POST">
+        {% csrf_token %} {% if question.is_question %}
+        <input type="text" required placeholder="Ваш ответ" name="options"> {% elif question.is_checkbox %} {% if question.option_set.all %} {% for o in question.option_set.all %}
+        <div class="messages">
+            <div>
+                <input name="options" type="checkbox" value="{{ o.text }}">
+            </div>
+            <div class="text_mess">
+                <p>{{ o.text }}</p>
+            </div>
+        </div>{% endfor %} {% else %}
+        <div class="text_mess">
+            <p>Нет вариантов ответа</p>
+        </div>
+        {% endif %} {% else %} {% if question.option_set.all %} {% for o in question.option_set.all %}
+        <div class="messages">
+            <div>
+                <input class="text_mess" name="options" type="radio" value="{{ o.text }}">
+            </div>
+            <div class="text_mess">
+                <p>{{ o.text }}</p>
+            </div>
+        </div>
+        {% endfor %} {% else %}
+
+        <div class="text_mess">
+            <p>Нет вариантов ответа</p>
+        </div>
+        {% endif %} {% endif %}
+
+
+        <button class="send" type="submit">Оставить ответ</button>
+
+
+    </form>
+    {% elif canAns %}
+    <form action="{% url 'logic:leave_answer_from_unregistered' article.slug question.id %}" method="POST">
+        {% csrf_token %}
+        <input type="text" required placeholder="Ваше имя" name="name" /> {% if question.is_question %}
+        <input type="text" required placeholder="Ваш ответ" name="options" /> {% elif question.is_checkbox %} {% if question.option_set.all %} {% for o in question.option_set.all %}
+        <input name="options" type="checkbox" value="{{ o.text }}"> {{ o.text }} {% endfor %} {% else %}
+        <div class="text_mess">
+            <p>Нет вариантов ответа</p>
+        </div>
+        {% endif %} {% else %} {% if question.option_set.all %} {% for o in question.option_set.all %}
+        <input name="options" type="radio" value="{{ o.text }}"> {{ o.text }} {% endfor %} {% else %}
+        <div class="text_mess">
+            <p>Нет вариантов ответа</p>
+        </div>
+        {% endif %} {% endif %}
+        <button class="send" type="submit">Оставить ответ</button>
+    </form>
+    {% else %}
+    <div class="text_mess">
+        <p>Вы не можете отвечать на вопросы</p>
+    </div>
+    {% endif %}
+    <hr> {% endfor %} {% else %}
+    <div class="text_mess">
+        <p>Нет вопросов</p>
+    </div>
+    <hr> {% endif %} {% if user.is_authenticated %}
+
+    <form method="POST" class="messages questions">
+        {% csrf_token %}
+        <textarea class="textarea" name="text" required="" placeholder="              Текст комментария" cols="30" rows="10"></textarea> {% if article.can_make_publish %}
+        <div class="btn">
+            <button class="send" type="submit" formaction="{% url 'logic:leave_public_comment' article.id %}">Оставить комментарий</button> {% endif %}
+            <button class="send" type="submit" formaction="{% url 'logic:leave_private_comment' article.id %}">Оставить комментарий автору</button>
+        </div>
+    </form>
+    {% else %}
+    <div class="text_mess">
+        <p>Вы не можете комментировать, потому что вы не зарегестрированы</p>
+    </div>
+    {% endif %} {% if article.public_comments %} {% for comment in article.public_comments %}
+    <div class="messages">
+        <div class="date_cont">
+            <p>{{ comment.author_name }}</p>
+        </div>
+        <div class="text_mess">
+            <p>{{ comment.text }}</p>
+        </div>
+    </div>
+    {% endfor %} {% else %}
+    <div class="text_mess">
+        <p>Нет комментариев</p>
+    </div>
+</div>
+{% endif %} {% endblock %}

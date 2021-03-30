@@ -1,0 +1,48 @@
+{% extends 'base.html' %} {% block title %} Последние вопросы {% endblock %} {% block extra_css %}
+<style>
+    .quests_container {
+        width: 30%;
+        left: 52%;
+        transition: all .2s ease-in-out .1s;
+        color: white;
+        position: relative;
+        display: block;
+        font-family: Nunito+Sans;
+        font-size: 30px;
+        padding: 20px;
+        background-color: #ff7f29;
+        border-radius: 50px 0px 50px 0px;
+        margin-top: 5px;
+        border: 2px solid green;
+        padding: 10px;
+        text-align: center;
+    }
+    
+    .quests_container:hover {
+        color: red;
+        transition: all .3s ease;
+        transform: scale(1.06);
+        background-color: white;
+    }
+    
+    .quests_container:active {
+        color: green;
+        transition: all .02s ease;
+        transform: scale(.96);
+    }
+</style>
+{% endblock %} {% block content %}
+<form class="messages questions" action="{% url 'logic:slug_search' %}" method="GET">
+    {% csrf_token %}
+    <input type="text" required placeholder="  Поиск по slug" name="slug">
+    <button class="send" type="submit"> Найти </button>
+</form>
+{% if list %} {% for a in list %}
+<div>
+    <a class="quests_container" href="{% url 'logic:detail_article' a.id %}"> {{ a.title }} | {{ a.get_topic_display }} </a>
+</div>
+{% endfor %} {% else %}
+<div>
+    <a class="quests_container">Вопросы не найдены</a>
+</div>
+{% endif %} {% endblock %}
