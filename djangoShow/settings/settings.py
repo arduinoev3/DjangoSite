@@ -13,8 +13,9 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+from djangoShow.settings.token import TOKEN
 
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
@@ -25,8 +26,7 @@ SECRET_KEY = '05o$ut-_9rol!09$*x=8a7&&9zji%h-e^8jsurpdwkhv2^5s=h'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['e14f22d30020.ngrok.io', '127.0.0.1']
 
 # Application definition
 
@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'logic',
     'appeals',
     'django.contrib.sites',
+    'django_telegrambot',
     # 'allauth',
     # 'allauth.account',
     # 'allauth.socialaccount',
@@ -78,7 +79,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'settings.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
@@ -88,7 +88,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -108,7 +107,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
@@ -122,12 +120,10 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
-
 
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
@@ -158,4 +154,64 @@ SOCIALACCOUNT_PROVIDERS = {
             'key': ''
         }
     }
+}
+
+DJANGO_TELEGRAMBOT = {
+
+    'MODE': 'POLLING',  # (Optional [str]) # The default value is WEBHOOK,
+    # otherwise you may use 'POLLING'
+    # NB: if use polling you must provide to run
+    # a management command that starts a worker
+
+    'WEBHOOK_SITE': 'https://mywebsite.com',
+    'WEBHOOK_PREFIX': '/prefix',  # (Optional[str]) # If this value is specified,
+    # a prefix is added to webhook url
+
+    # 'WEBHOOK_CERTIFICATE' : 'cert.pem', # If your site use self-signed
+    # certificate, must be set with location of your public key
+    # certificate.(More info at https://core.telegram.org/bots/self-signed )
+
+    'BOTS': [
+        {
+            'TOKEN': TOKEN,  # Your bot token.
+
+            # 'ALLOWED_UPDATES':(Optional[list[str]]), # List the types of
+            # updates you want your bot to receive. For example, specify
+            # ``["message", "edited_channel_post", "callback_query"]`` to
+            # only receive updates of these types. See ``telegram.Update``
+            # for a complete list of available update types.
+            # Specify an empty list to receive all updates regardless of type
+            # (default). If not specified, the previous setting will be used.
+            # Please note that this parameter doesn't affect updates created
+            # before the call to the setWebhook, so unwanted updates may be
+            # received for a short period of time.
+
+            # 'TIMEOUT':(Optional[int|float]), # If this value is specified,
+            # use it as the read timeout from the server
+
+            # 'WEBHOOK_MAX_CONNECTIONS':(Optional[int]), # Maximum allowed number of
+            # simultaneous HTTPS connections to the webhook for update
+            # delivery, 1-100. Defaults to 40. Use lower values to limit the
+            # load on your bot's server, and higher values to increase your
+            # bot's throughput.
+
+            # 'POLL_INTERVAL' : (Optional[float]), # Time to wait between polling updates from Telegram in
+            # seconds. Default is 0.0
+
+            # 'POLL_CLEAN':(Optional[bool]), # Whether to clean any pending updates on Telegram servers before
+            # actually starting to poll. Default is False.
+
+            # 'POLL_BOOTSTRAP_RETRIES':(Optional[int]), # Whether the bootstrapping phase of the `Updater`
+            # will retry on failures on the Telegram server.
+            # |   < 0 - retry indefinitely
+            # |     0 - no retries (default)
+            # |   > 0 - retry up to X times
+
+            # 'POLL_READ_LATENCY':(Optional[float|int]), # Grace time in seconds for receiving the reply from
+            # server. Will be added to the `timeout` value and used as the read timeout from
+            # server (Default: 2).
+        },
+        # Other bots here with same structure.
+    ],
+
 }
