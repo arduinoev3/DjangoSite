@@ -1,2 +1,4 @@
 .idea
 myvenv
+ngrok.exe
+djangoShow/settings/token.py
