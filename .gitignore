@@ -1,4 +1,4 @@
 .idea
 ngrok.exe
 djangoShow/settings/config.py
-djangoShow/staticfiles
+# djangoShow/staticfiles
