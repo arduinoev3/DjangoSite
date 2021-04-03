@@ -9,11 +9,12 @@ https://docs.djangoproject.com/en/3.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
+from .config import *
 
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-from djangoShow.settings.token import TOKEN
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -23,10 +24,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '05o$ut-_9rol!09$*x=8a7&&9zji%h-e^8jsurpdwkhv2^5s=h'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = ['e14f22d30020.ngrok.io', '127.0.0.1']
+ALLOWED_HOSTS = []
+if site:
+    ALLOWED_HOSTS.append(site)
+if DEBUG:
+    ALLOWED_HOSTS.append('127.0.0.1')
 
 # Application definition
 
@@ -158,12 +160,12 @@ SOCIALACCOUNT_PROVIDERS = {
 
 DJANGO_TELEGRAMBOT = {
 
-    'MODE': 'POLLING',  # (Optional [str]) # The default value is WEBHOOK,
+    'MODE': MODE,  # (Optional [str]) # The default value is WEBHOOK,
     # otherwise you may use 'POLLING'
     # NB: if use polling you must provide to run
     # a management command that starts a worker
 
-    'WEBHOOK_SITE': 'https://mywebsite.com',
+    'WEBHOOK_SITE': 'https://' + site,
     'WEBHOOK_PREFIX': '/prefix',  # (Optional[str]) # If this value is specified,
     # a prefix is added to webhook url
 
@@ -173,7 +175,7 @@ DJANGO_TELEGRAMBOT = {
 
     'BOTS': [
         {
-            'TOKEN': TOKEN,  # Your bot token.
+            'TOKEN': token,  # Your bot token.
 
             # 'ALLOWED_UPDATES':(Optional[list[str]]), # List the types of
             # updates you want your bot to receive. For example, specify
