@@ -110,13 +110,6 @@ DJANGO_TELEGRAMBOT = {
 
 }
 
-PROJECT_ROOT = os.path.join(os.path.abspath(__file__))
-
-# Extra lookup directories for collectstatic to find static files
-STATICFILES_DIRS = (
-    os.path.join(PROJECT_ROOT, 'static'),
-)
-
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 import dj_database_url
