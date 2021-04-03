@@ -1,4 +1,5 @@
 .idea
 ngrok.exe
 djangoShow/settings/config.py
-.venv
+../.venv
+djangoShow/staticfiles
