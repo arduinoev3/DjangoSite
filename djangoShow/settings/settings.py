@@ -5,7 +5,7 @@ from pathlib import Path
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BASE_DIR = Path(__file__).resolve().parent.parent
+# BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = '05o$ut-_9rol!09$*x=8a7&&9zji%h-e^8jsurpdwkhv2^5s=h'
 
@@ -96,8 +96,6 @@ SITE_ID = 1
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = "/static/"
 
-django_heroku.settings(locals())
-
 DJANGO_TELEGRAMBOT = {
 
     'MODE': MODE,
@@ -120,4 +118,5 @@ import dj_database_url
 prod_db = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(prod_db)
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+django_heroku.settings(locals())
