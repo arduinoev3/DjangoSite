@@ -1,3 +1,4 @@
 .idea
 ngrok.exe
 djangoShow/settings/config.py
+.venv
