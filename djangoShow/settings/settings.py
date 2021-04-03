@@ -1,8 +1,11 @@
 from .config import *
 import os
 import django_heroku
+from pathlib import Path
+
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = '05o$ut-_9rol!09$*x=8a7&&9zji%h-e^8jsurpdwkhv2^5s=h'
 
