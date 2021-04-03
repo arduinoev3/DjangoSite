@@ -6,4 +6,4 @@ from django.core.exceptions import PermissionDenied
 
 
 def start_page(request):
-    return render(request, 'logic/start.html', {'user': request.user})
+    return render(request, 'base.html', {'user': request.user})
