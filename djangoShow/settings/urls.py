@@ -20,7 +20,7 @@ from django_telegrambot.urls import url
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('logic/', include('logic.urls')),
+    path('', include('logic.urls')),
     path('appeals/', include('appeals.urls')),
     url(r'^', include('django_telegrambot.urls')),
 ]
