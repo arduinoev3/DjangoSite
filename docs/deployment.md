@@ -1,25 +1,32 @@
-# Развёртывание (Heroku)
+# Развёртывание
 
-Проект содержит `Procfile` и `runtime.txt` для деплоя на Heroku.
+Ниже приведены базовые рекомендации по развёртыванию проекта на Heroku и в других окружениях.
 
-1. Войдите в Heroku и создайте приложение.
+Heroku (рекомендованный быстрый путь):
 
-2. Установите переменные окружения в Heroku (Settings -> Config Vars):
+1. Создайте приложение на Heroku и подключите репозиторий.
+2. Установите переменные окружения через Heroku dashboard или CLI:
 
-- `DJANGO_SETTINGS_MODULE` = `settings.settings`
-- `DEBUG` = `False`
-- `TELEGRAM_TOKEN` = `<your-token>`
-- `SITE` = `<your-app>.herokuapp.com`
-- `DATABASE_URL` = `<postgres-connection>` (если требуется)
+- DJANGO_SECRET_KEY
+- DEBUG=False
+- DATABASE_URL (Heroku Postgres)
+- TELEGRAM_TOKEN (если нужен бот)
 
-3. Запушьте репозиторий в Heroku git и выполните миграции:
+3. Убедитесь, что `Procfile` и `runtime.txt` присутствуют (они есть в репозитории).
+4. Heroku автоматически обнаружит `requirements.txt` и установит зависимости.
+5. Выполните миграции на Heroku:
 
-```bash
-git push heroku master
-heroku run python djangoShow/manage.py migrate
-heroku run python djangoShow/manage.py collectstatic --noinput
-```
+	heroku run python djangoShow/manage.py migrate
 
-4. Gunicorn будет использоваться как WSGI-сервер (см. `Procfile`).
+6. Настройте webhook Telegram для бота (если используете WEBHOOK режим):
 
-Примечание: В `djangoShow/settings/config.py` по умолчанию прописаны `site` и `token`. Для безопасности замените их на переменные окружения.
+	- Укажите `SITE_DOMAIN` или в настройках `djangoShow/settings/config.py` корректный домен.
+	- Настройте HTTPS (Heroku автоматически обеспечивает TLS для herokuapp.com доменов).
+
+Прочие советы:
+
+- Для продакшена используйте Postgres (DATABASE_URL). SQLite не подходит для масштабируемого продакшена.
+- Настройте хранение секретов: не храните токены и ключи в репозитории.
+- Рассмотрите использование Redis как брокера для Celery и для кэширования.
+- Используйте WhiteNoise или CDN для отдачи статических файлов; при больших нагрузках — храните статику в S3.
+

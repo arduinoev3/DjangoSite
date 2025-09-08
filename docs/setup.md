@@ -1,44 +1,48 @@
-# Установка и локальный запуск
+# Установка и локальная настройка
 
-1. Клонируйте репозиторий и перейдите в корень проекта.
+Этот документ описывает шаги для быстрого запуска проекта локально для разработки.
 
-2. Создайте виртуальное окружение (рекомендуется `venv`):
+1) Клонирование
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
+	git clone <repo-url>
 
-3. Установите зависимости:
+2) Виртуальное окружение
 
-```bash
-pip install -r requirements.txt
-```
+	python3 -m venv .venv
+	source .venv/bin/activate
+	pip install --upgrade pip
+	pip install -r requirements.txt
 
-4. Настройте переменные окружения. Для локальной разработки можно временно отредактировать `djangoShow/settings/config.py`, но рекомендуется использовать `.env` или экспорт переменных в shell:
+3) Переменные окружения
 
-```bash
-export DJANGO_SETTINGS_MODULE=settings.settings
-export DEBUG=True
-export TELEGRAM_TOKEN="<your-token>"
-export SITE="localhost"
-```
+Установите переменные окружения, необходимые приложению. Минимум для разработки:
 
-5. Выполните миграции и соберите статику:
+- DJANGO_DEBUG=True
+- DJANGO_SECRET_KEY — используйте случайную строку
+- TELEGRAM_TOKEN — если используете Telegram интеграцию
 
-```bash
-python djangoShow/manage.py migrate
-python djangoShow/manage.py collectstatic --noinput
-```
+Пример для macOS/zsh:
 
-6. Запустите сервер разработки:
+	export DJANGO_DEBUG=True
+	export DJANGO_SECRET_KEY="dev-secret"
+	export TELEGRAM_TOKEN="your-token"
 
-```bash
-python djangoShow/manage.py runserver
-```
+4) Миграции и создание суперпользователя
 
-7. Запуск тестов:
+	python djangoShow/manage.py migrate
+	python djangoShow/manage.py createsuperuser
 
-```bash
-python djangoShow/manage.py test
-```
+5) Запуск
+
+	python djangoShow/manage.py runserver
+
+6) Опционально: Celery
+
+Если вы планируете использовать Celery, запустите worker отдельно:
+
+	celery -A djangoShow worker -l info
+
+7) Отладка и логи
+
+Логи Django выводятся в STDOUT при запуске `runserver`. Для продакшена настройте отдельный логгер и хранение логов (например, Sentry).
+

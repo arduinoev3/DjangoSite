@@ -1,104 +1,131 @@
 # DjangoSite
 
 Краткое описание
+-----------------
 
-Проект DjangoSite — веб-приложение на Django, включающее модульную структуру с приложениями `logic` и `appeals`, интеграцией с Telegram-ботом и готовностью к развёртыванию на Heroku.
+DjangoSite — это веб-приложение на Django (3.1) с набором внутренних приложений: `logic` и `appeals`. Проект включает интеграцию с Telegram-ботом, поддержку фоновых задач (Celery), настройки для развёртывания на Heroku и статической выдачи через WhiteNoise.
 
-## Основные функции
+Основные возможности
+--------------------
 
-- Веб-интерфейс на Django
-- Интеграция с Telegram (webhook)
-- Приложения: `logic`, `appeals`
-- Поддержка Celery/cron задач (зависимости в `requirements.txt`)
+- Веб-интерфейс и шаблоны для управления контентом (пакет `logic`).
+- Модуль обращений/жалоб (`appeals`).
+- Интеграция с Telegram через `django_telegrambot` (WEBHOOK режим).
+- Поддержка фоновых задач через Celery и планирования задач (APScheduler).
+- Конфигурация, совместимая с Heroku (пакет `django_heroku` и `dj-database-url`).
 
-## Технологический стек
+Стек
+-----
 
-- Python 3.6
+- Python 3.8+ (репозиторий использует пакеты, совместимые с Python 3.8)
 - Django 3.1
 - Celery
-- PostgreSQL (через dj-database-url при продакшн-конфигурации)
-- Gunicorn
-- Whitenoise для статических файлов
+- django-telegrambot / python-telegram-bot
+- WhiteNoise для статики
+- SQLite по умолчанию, но подготовлено для Postgres на Heroku
 
-## Установка
+Быстрый старт (локально)
+-----------------------
 
-1. Клонируйте репозиторий
-2. Создайте виртуальное окружение и активируйте его
-3. Установите зависимости:
+1. Клонировать репозиторий:
 
-```bash
-pip install -r requirements.txt
-```
+	git clone <repo-url>
 
-4. Выполните миграции:
+2. Создать виртуальное окружение и установить зависимости:
 
-```bash
-python djangoShow/manage.py migrate
-```
+	python3 -m venv .venv
+	source .venv/bin/activate
+	pip install --upgrade pip
+	pip install -r requirements.txt
 
-## Переменные окружения
+3. Настроить переменные окружения (см. раздел "Переменные окружения").
 
-Проект использует переменные окружения, которые могут быть вынесены в `settings/config.py` в development или заданы в окружении при деплое:
+4. Выполнить миграции и запустить сервер:
 
-- DJANGO_SETTINGS_MODULE — модуль настроек (по умолчанию `settings.settings`)
-- DEBUG — флаг debug (boolean)
-- SITE — доменное имя приложения (пример: `example.herokuapp.com`)
-- TELEGRAM_TOKEN — токен бота
-- DATABASE_URL — URL для postgres (используется `dj-database-url`)
+	python djangoShow/manage.py migrate
+	python djangoShow/manage.py runserver
 
-Пример в `djangoShow/settings/config.py` (примерный):
+Установка и окружение
+---------------------
 
-```py
-site = '.herokuapp.com'
-DEBUG = False
-token = '<TELEGRAM_TOKEN>'
-MODE = 'WEBHOOK'
-```
+Рекомендуется использовать виртуальное окружение и Python 3.8+. Все зависимости перечислены в `requirements.txt`.
 
-## Запуск локально
+Переменные окружения
+---------------------
 
-1. Соберите статические файлы:
+Необходимо задать как минимум следующие переменные в продакшене и/или при локальной разработке, если вы переопределяете значения в `djangoShow/settings/config.py`:
 
-```bash
-python djangoShow/manage.py collectstatic --noinput
-```
+- DJANGO_DEBUG — включить/выключить DEBUG (True/False)
+- DJANGO_SECRET_KEY — секретный ключ Django
+- DATABASE_URL — строка подключения к базе данных (для Postgres/Heroku)
+- TELEGRAM_TOKEN — токен Telegram-бота (если используете бот)
+- SITE_DOMAIN — домен сайта (используется для webhook)
 
-2. Запустите сервер разработки:
+Пример (macOS / zsh):
 
-```bash
-python djangoShow/manage.py runserver
-```
+	export DJANGO_DEBUG=False
+	export DJANGO_SECRET_KEY="your-secret-key"
+	export DATABASE_URL=postgres://user:pass@host:5432/dbname
+	export TELEGRAM_TOKEN=123:ABC
+	export SITE_DOMAIN=example.com
 
-Для продакшн-реконфигурации используется Gunicorn (см. `Procfile`):
+Запуск Celery (локально)
+------------------------
 
-```bash
-gunicorn djangoShow.wsgi --log-file -
-```
+Для фоновых задач и очередей:
 
-## Структура проекта
+	celery -A djangoShow worker -l info
 
-- `djangoShow/` — корень Django проекта
+Если используется брокер Redis или RabbitMQ — убедитесь, что переменная BROKER_URL/REDIS_URL установлена и брокер запущен.
+
+Структура проекта
+-----------------
+
+Основные директории и файлы:
+
+- `djangoShow/` — корневая Django-папка проекта
+  - `manage.py` — менеджер Django
+  - `settings/` — настройки проекта (`config.py`, `settings.py` и т.д.)
   - `logic/` — основное приложение с бизнес-логикой
   - `appeals/` — приложение для обращений/жалоб
-  - `settings/` — конфигурация проекта
-  - `manage.py` — управляющий скрипт
+  - `db.sqlite3` — обычная SQLite БД для разработки
 - `requirements.txt` — зависимости
-- `Procfile`, `runtime.txt` — прицельная конфигурация для Heroku
+- `Procfile`, `runtime.txt` — файлы для Heroku
+- `docs/` — документация (см. ниже)
 
-## Тесты
+Тесты
+-----
 
-Запуск тестов через manage.py:
+Запуск тестов через Django test runner:
 
-```bash
-python djangoShow/manage.py test
-```
+	python djangoShow/manage.py test
 
-## Важные нюансы
+Важные нюансы и советы
+----------------------
 
-- В `djangoShow/settings/config.py` хардкодятся значения `token` и `site`. Для безопасности вынесите настоящие секреты в переменные окружения и не коммитьте их в репозиторий.
-- В `requirements.txt` указана старая версия Python (3.6) и некоторые зависимости могут нуждаться в обновлении.
-- Проект использует `django_telegrambot` и `python-telegram-bot` — проверьте версии и совместимость.
+- В `djangoShow/settings/config.py` по умолчанию указан `MODE = 'WEBHOOK'` и примерный `token`. Не храните реальные токены в репозитории; вместо этого используйте переменные окружения.
+- `django_heroku.settings(locals())` в `settings.py` автоматически настраивает некоторые параметры для Heroku; проверьте, не переопределяют ли ваши переменные окружения важные настройки.
+- По умолчанию проект использует SQLite — для продакшена рекомендуется Postgres (Heroku Postgres).
+- WhiteNoise используется для отдачи статических файлов без отдельного CDN в простом деплое.
 
-## Лицензия
+Лицензия
+--------
 
-Этот проект лицензируется под MIT License — см. файл `LICENSE`.
+Проект лицензируется под MIT License — полный текст см. в файле `LICENSE`.
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
